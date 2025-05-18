@@ -27,7 +27,8 @@
         (at-robby ?rob - mover ?loc - location) ;where is the mover
         (freeMover ?rob - mover) ;mover doesn't take crate
         (carryngCrate ?rob - mover ?obj - crate) ;mover holds a crate -> specify who is the holder of a crate
-        (linked ?rob1 - mover ?rob2 - mover) ;link two mover for transport heavy crate
+        (linked ?rob - mover);identify if mover is linked 
+        (linkedWith ?rob1 - mover ?rob2 - mover) ;identify with which mover is linked
 
         (freeLoader ?rob - loader) ;indicates that loader can load crate
         (loadingCrate ?rob -loader ?obj - crate) ;indicates that loader loads crate 
@@ -56,35 +57,74 @@
     ;@Precondition: robot at start-location, robot doesn't holding carry
     ;@Effect: robot at end-location
     (:action moveFree
-        :parameters (?rob - mover ?from - location ?to - location)
+        :parameters (?rob1 - mover ?rob2 - mover ?from - location ?to - location)
         :precondition (and
-            (at-robby ?rob ?from)
-            (freeMover ?rob)
+            (at-robby ?rob1 ?from)
+            (at-robby ?rob2 ?from)
+            (freeMover ?rob1)
+            (freeMover ?rob2)
+
+            (linked ?rob1)
+            (linked ?rob2)
+
+            (linkedWith ?rob1 ?rob2)
+            (linkedWith ?rob2 ?rob1)
         )
         :effect (and
-            (not (at-robby ?rob ?from))
-            (at-robby ?rob ?to)
+            (not (at-robby ?rob1 ?from))
+            (not (at-robby ?rob2 ?from))
+            (at-robby ?rob1 ?to)
+            (at-robby ?rob2 ?to)
         )
     )
 
-    ;@Precondition: robot holding carry, carry is holded
-    ;@Effect: robot at the end-ocation
-    (:action moveLight
-        :parameters (?obj - crate?rob - mover ?from - location ?to - location)
-        :precondition (and
-            (at-robby ?rob ?from)
-            (not (freeMover ?rob))
+    ; ;@Precondition: robot holding crate, carry is holded
+    ; ;@Effect: robot at the end-ocation
+    ; (:action moveLight
+    ;     :parameters (?obj - crate?rob - mover ?from - location ?to - location)
+    ;     :precondition (and
+    ;         (at-robby ?rob ?from)
+    ;         (not (freeMover ?rob))
+    ;         (carried ?obj)
+    ;         (carryngCrate ?rob ?obj)
+    ;     )
+    ;     :effect (and
+    ;         (not (at-robby ?rob ?from))
+    ;         (at-robby ?rob ?to)
+    ;     )
+    ; )
+
+    ;@Precondition: robots (one if weight <= 50), robots holding crate, crate is holded
+    ;@Effect: robots at the end-location
+    (:action moveCrate
+        :parameters (?obj - crate ?rob1 - mover ?rob2 - mover ?from - location ?to - location)
+        :precondition (and 
+            (at-robby ?rob1 ?from)
+            (at-robby ?rob2 ?from)
+
+            (not (freeMover ?rob1))
+            (not (freeMover ?rob2))
+
             (carried ?obj)
-            (carryngCrate ?rob ?obj)
+            (carryngCrate ?rob1 ?obj)
+            (carryngCrate ?rob2 ?obj)
+
+            (linkedWith ?rob1 ?rob2)
+            (linkedWith ?rob2 ?rob1)
+            (linked ?rob1)
+            (linked ?rob2)
         )
-        :effect (and
-            (not (at-robby ?rob ?from))
-            (at-robby ?rob ?to)
+        :effect (and 
+            (not (at-robby ?rob1 ?from))
+            (not (at-robby ?rob2 ?from))
+            (at-robby ?rob1 ?to)
+            (at-robby ?rob2 ?to)
         )
     )
+    
 
-    ;@Precondition: robots (one if weight <= 50) and carry at same location, robots doesn't holding carry, carry isn't holded
-    ;@Effect: robots take carry, robots are linked
+    ;@Precondition: robots (one if weight <= 50) and carry at same location, robots doesn't holding crate, crate isn't holded
+    ;@Effect: robots take crate, robots are linkedWith
     (:action pickUp
         :parameters (?rob1 - mover ?rob2 - mover ?obj - crate ?loc - location)
         :precondition (and
@@ -103,12 +143,12 @@
             (or
                 (and 
                     (>= (weight ?obj) 50)
-                    (linked ?rob1 ?rob2)
-                ) ;if weight >= 50, must have two movers linked
+                    (linkedWith ?rob1 ?rob2)
+                ) ;if weight >= 50, must have two movers linkedWith
                 
                 (and 
                     (< (weight ?obj) 50) 
-                    (or (linked ?rob1 ?rob2) (= ?rob1 ?rob2)) ;robots should be linked (if they are different) or be the same robot 
+                    (or (linkedWith ?rob1 ?rob2) (= ?rob1 ?rob2)) ;robots should be linkedWith (if they are different) or be the same robot 
                 ) ; if light crate, can be moved by one or two movers
             )
         )
@@ -136,12 +176,12 @@
             (or
                 (and 
                     (>= (weight ?obj) 50)
-                    (linked ?rob1 ?rob2)
-                ) ;if weight >= 50, must have two movers linked
+                    (linkedWith ?rob1 ?rob2)
+                ) ;if weight >= 50, must have two movers linkedWith
                 
                 (and 
                     (< (weight ?obj) 50) 
-                    (or (linked ?rob1 ?rob2) (= ?rob1 ?rob2)) ;robots should be linked (if they are different) or be the same robot 
+                    (or (linkedWith ?rob1 ?rob2) (= ?rob1 ?rob2)) ;robots should be linkedWith (if they are different) or be the same robot 
                 ) ; if light crate, can be moved by one or two movers
             )
         )
@@ -156,8 +196,8 @@
             (at ?obj ?loc)
 
             ;OPTIONAL UNLINK ACTION
-            ; (when (linked ?rob1 ?rob2) 
-            ;     (not (linked ?rob1 ?rob2))
+            ; (when (linkedWith ?rob1 ?rob2) 
+            ;     (not (linkedWith ?rob1 ?rob2))
             ; )
         )
     )
@@ -200,9 +240,9 @@
         )
     )
 
-    ;@Precondition: robot1 and robot2 at same location, robots don't holding carry, robots are not linked
+    ;@Precondition: robot1 and robot2 at same location, robots don't holding carry, robots are not linkedWith
     ;@Effect: robots link to eachother
-    (:action linkMover
+    (:action linkMovers
         :parameters (?rob1 - mover ?rob2 - mover ?loc - location)
         :precondition (and
             (at-robby ?rob1 ?loc)
@@ -210,10 +250,16 @@
 
             (freeMover ?rob1)
             (freeMover ?rob2)
+
+            (not (linked ?rob1))
+            (not (linked ?rob2))
         )
         :effect (and
-            (linked ?rob1 ?rob2)
-            (linked ?rob2 ?rob1)
+            (linkedWith ?rob1 ?rob2)
+            (linkedWith ?rob2 ?rob1)
+
+            (linked ?rob1)
+            (linked ?rob2)
         )
     )
 
@@ -222,15 +268,23 @@
     (:action unlinkMover
         :parameters (?rob1 - mover ?rob2 - mover ?loc - location)
         :precondition (and
-            (linked ?rob1 ?rob2)
-            (linked ?rob2 ?rob1)
+            (linkedWith ?rob1 ?rob2)
+            (linkedWith ?rob2 ?rob1)
+            (linked ?rob1)
+            (linked ?rob2)
 
             (at-robby ?rob1 ?loc)
             (at-robby ?rob2 ?loc)
+
+            (freeMover ?rob1)
+            (freeMover ?rob2)
         )
         :effect (and
-            (not (linked ?rob1 ?rob2))
-            (not (linked ?rob2 ?rob1))
+            (not (linkedWith ?rob1 ?rob2))
+            (not (linkedWith ?rob2 ?rob1))
+
+            (not (linked ?rob1))
+            (not (linked ?rob2))
         )
     )
 
@@ -248,6 +302,5 @@
     ;        (at start (not (at-robby ?rob ?from))) ; robot leaves the starting location at start
     ;        (at end (at-robby ?rob ?to)) ; robot arrives at the destination at end
     ;    )
-    ;)
-
+    ;)    
 )

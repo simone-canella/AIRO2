@@ -24,11 +24,15 @@
         (at-robby mover1 loadingBay)
         ;(= (distance mover1) 0)
         (freeMover mover1)
+        (linkedWith mover1 mover1)
+        (linked mover1)
 
         ;Mover2 initial configuration
         (at-robby mover2 loadingBay)
         ;(= (distance mover2) 0)
         (freeMover mover2)
+        (linkedWith mover2 mover2)
+        (linked mover2)
 
         ;Initialize constant value
         ;(= (time) 0)
