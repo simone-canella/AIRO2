@@ -1,7 +1,7 @@
 (define (problem warehouse_problem)
     (:domain warehouse_domain)
     (:objects
-        mover1 - mover
+        mover1 mover2 - mover
         loader1 - loader
         crate1 crate2 - crate
         initialPosition1 initialPosition2 loadingBay conveyorBelt - location
@@ -26,9 +26,9 @@
         (freeMover mover1)
 
         ;Mover2 initial configuration
-        ;(at-robby mover2 loadingBay)
+        (at-robby mover2 loadingBay)
         ;(= (distance mover2) 0)
-        ;(freeMover mover2)
+        (freeMover mover2)
 
         ;Initialize constant value
         ;(= (time) 0)
@@ -38,6 +38,7 @@
         (and
             (at-robby mover1 loadingBay)
             (at crate2 loadingBay)
+            (at crate1 loadingBay)
         )
     )
 
