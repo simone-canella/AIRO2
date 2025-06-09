@@ -1,7 +1,7 @@
 (define (problem warehouse_problem) (:domain warehouse_domain)
 (:objects 
     mover1 mover2 - mover
-    loader - loader
+    loader1 - loader
     crate1 crate2 - crate
     loading_bay conveyor_belt loc1 loc2 - location 
 )
@@ -14,7 +14,7 @@
 (groupA crate2)
 (freeMover mover1)
 (freeMover mover2)
-(freeLoader loader)
+(freeLoader loader1)
 (at_robby mover1 loading_bay)
 (at_robby mover2 loading_bay)
 

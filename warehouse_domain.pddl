@@ -1,7 +1,7 @@
 (define (domain warehouse_domain)
 
 ; remove requirements that are not needed
-(:requirements :strips :typing :durative-actions :numeric-fluents :negative-preconditions)
+(:requirements :strips :typing :durative-actions :numeric-fluents)
 
 (:types 
     mover loader crate location
@@ -13,8 +13,8 @@
     (light ?c - crate)
     (carry ?m - mover ?c - crate)
     (freeMover ?m - mover)
-    (freeLoader ?l - loader)
-    (loading ?l - loader ?c - crate)
+    (freeloader ?l - loader1)
+    (loading ?l - loader1 ?c - crate)
     (at_robby ?m - mover ?l - location)
     (at_crate ?c - crate ?l - location)
     (groupA ?c - crate)
@@ -47,28 +47,28 @@
 )
 
 (:action drop-off_heavy
-    :parameters (?m1 - mover ?m2 - mover ?l - location ?c - crate ?ld - loader)
-    :precondition (and (carry ?m1 ?c) (carry ?m2 ?c) (at_robby ?m1 ?l) (at_robby ?m2 ?l) (heavy ?c) (not(loading ?l ?c)))
+    :parameters (?m1 - mover ?m2 - mover ?l - location ?c - crate ?ld - loader1)
+    :precondition (and (carry ?m1 ?c) (carry ?m2 ?c) (at_robby ?m1 ?l) (at_robby ?m2 ?l) (heavy ?c) (freeloader ?ld))
     :effect (and (not (carry ?m1 ?c)) (not (carry ?m2 ?c)) (at_robby ?m1 ?l) (at_robby ?m2 ?l) (at_crate ?c ?l) (to_load ?c) (freeMover ?m1) (freeMover ?m2) )
 )
 
 (:action drop-off-light-single
-    :parameters (?m - mover ?l - location ?c - crate ?ld - loader)
-    :precondition (and (carry ?m ?c) (at_robby ?m ?l) (light ?c) (not(loading ?l ?c)))
+    :parameters (?m - mover ?l - location ?c - crate ?ld - loader1)
+    :precondition (and (carry ?m ?c) (at_robby ?m ?l) (light ?c) (freeloader ?ld))
     :effect (and (not (carry ?m ?c)) (at_robby ?m ?l) (at_crate ?c ?l) (to_load ?c) (freeMover ?m) )
 )
 
 (:action drop-off-light-double
-    :parameters (?m1 - mover ?m2 - mover ?l - location ?c - crate ?ld - loader)
-    :precondition (and (carry ?m1 ?c) (carry ?m2 ?c) (at_robby ?m1 ?l) (at_robby ?m2 ?l) (light ?c) (not(loading ?l ?c)))
+    :parameters (?m1 - mover ?m2 - mover ?l - location ?c - crate ?ld - loader1)
+    :precondition (and (carry ?m1 ?c) (carry ?m2 ?c) (at_robby ?m1 ?l) (at_robby ?m2 ?l) (light ?c) (freeloader ?ld))
     :effect (and (not (carry ?m1 ?c)) (not (carry ?m2 ?c)) (at_robby ?m1 ?l) (at_robby ?m2 ?l) (at_crate ?c ?l) (to_load ?c) (freeMover ?m1) (freeMover ?m2) )
 )
 
 (:durative-action loading_crate
-    :parameters (?ld - loader ?c - crate ?l - location)
+    :parameters (?ld - loader1 ?c - crate ?l - location)
     :duration (=?duration (loading_duration))
-    :condition (and (at start (to_load ?c)) (at start (freeLoader ?ld)))
-    :effect (and (at start (loading ?ld ?c)) (at end (not (to_load ?c))) (at end (on_belt ?c ?l))(at end(freeLoader ?ld)) )
+    :condition (and (at start (to_load ?c)) (at start (freeloader ?ld)))
+    :effect (and (at start (loading ?ld ?c)) (at end (not (to_load ?c))) (at end (on_belt ?c ?l))(at end(freeloader ?ld)) )
 )
 
 (:durative-action moving_heavy_crate
@@ -96,7 +96,7 @@
 (:durative-action moving_free
     :parameters (?m - mover ?from - location ?to - location ?c - crate)
     :duration (= ?duration (/(distance ?from ?to)10))
-    :condition (and (at start (at_robby ?m ?from)) (at start (not (at_crate ?m ?from)))(over all (not (carry ?m ?c))) )
+    :condition (and (at start (at_robby ?m ?from)) (over all (freeMover ?m)) )
     :effect (and (at end (at_robby ?m ?to)) (at start (not (at_robby ?m ?from))) )
 )
 
