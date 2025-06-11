@@ -25,10 +25,14 @@
         ;Crate1 initial configuration
         (at crate1 initialPosition1)
         (= (weight crate1) 70)
+        (= (doubleCarry crate1) 100) ;it's a heavy crate, so it requires double carry
 
         ;Crate2 initial configuration
         (at crate2 initialPosition2)
         (= (weight crate2) 20)
+        (= (doubleCarry crate2) 100) ;it's a light crate, so double carry is faster (smaller weight)
+
+
 
         ;Mover1 initial configuration
         (at-robby mover1 loadingBay)
@@ -45,8 +49,8 @@
     )
 
     (:goal (and
-           (onBelt crate1)) ; crate1 must be at conveyorBelt
-           ;;(onBelt crate2)) ; crate2 must be at conveyorBelt                  ;RIGHT NOW ENSHP DOESN'T MANAGE TO GET BOTH CRATES ON THE BELT (TRY WITH ONLY ONE CRATE AND DEBUG ALL STEPS TOWARDS SECOND CRATE)
+           (onBelt crate1) ; crate1 must be at conveyorBelt
+           (onBelt crate2)) ; crate2 must be at conveyorBelt                
                          
     )
 
