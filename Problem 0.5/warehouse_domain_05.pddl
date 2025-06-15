@@ -1,17 +1,13 @@
-(define (domain warehouse_domain)
+(define (domain warehouse_domain_05)
   (:requirements :strips :typing :fluents :durative-actions :timed-initial-literals :conditional-effects :negative-preconditions :duration-inequalities :equality :disjunctive-preconditions :time)
   (:types mover loader crate location)
   
-  (:constants
-    loadingBay - location
-  )
 
   (:predicates
     (at-robby ?rob - mover ?loc - location)
     (freeMover ?rob - mover)
     (carryingCrate ?rob - mover ?obj - crate)
     (linkedWith ?rob1 - mover ?rob2 - mover)
-    (moving ?rob - mover ?from - location ?to - location)
     (pickedFrom ?obj - crate ?loc - location)
     (inTransit ?obj - crate)
     (to_load ?obj - crate)
@@ -20,7 +16,11 @@
     (at ?obj - crate ?loc - location)
     (onBelt ?obj - crate)
     (at-loader ?ld - loader ?loc - location)
-  )
+      (moving-loaded ?rob - mover ?from - location ?to - location)
+    (movingfree ?mover - mover ?from - location ?to - location)
+    (carryingcratedouble ?rob1 - mover ?rob2 - mover ?obj - crate)
+    (moving-loaded-double ?rob1 - mover ?rob2 - mover ?from - location ?to - location)
+)
 
   (:functions
     (weight ?obj - crate)
@@ -50,82 +50,86 @@
 
   ;; Light crate carrying
   (:action startCarry
-    :parameters (?rob - mover ?obj - crate ?from - location)
+    :parameters (?rob - mover ?obj - crate ?from - location ?to - location ?ld - loader)
     :precondition (and
       (< (weight ?obj) 50)
       (carryingCrate ?rob ?obj)
       (at-robby ?rob ?from)
       (pickedFrom ?obj ?from)
-      (not (inTransit ?obj)))
+      (freeLoader ?ld))
     :effect (and
+      (not (freeMover ?rob))
+      (moving-loaded ?rob ?from ?to)
       (not (at-robby ?rob ?from))
       (assign (travel_time ?rob) 0)
-      (inTransit ?obj)
-      (moving ?rob ?from loadingBay))
+      (inTransit ?obj))
   )
 
   (:process carrying
-    :parameters (?rob - mover ?obj - crate ?from - location)
-    :precondition (inTransit ?obj)
-    :effect (increase (travel_time ?rob) (* #t 1))
+    :parameters (?rob1 - mover ?rob2 - mover ?obj - crate ?from - location ?to - location)
+    :precondition (and (not (= ?rob1 ?rob2)) (inTransit ?obj) (moving-loaded ?rob1 ?from ?to) (carryingCrate ?rob1 ?obj) (not (linkedWith ?rob1 ?rob2)))
+    :effect (increase (travel_time ?rob1) (* #t 1))
   )
 
   (:event endCarrying
-    :parameters (?rob - mover ?obj - crate ?from - location ?ld - loader)
+    :parameters (?rob - mover ?obj - crate ?from - location ?to - location ?ld - loader)
     :precondition (and
       (carryingCrate ?rob ?obj)
       (inTransit ?obj)
       (freeLoader ?ld)
-      (>= (travel_time ?rob) (/ (* (weight ?obj) (distance ?from loadingBay)) 100)))
+      (moving-loaded ?rob ?from ?to)
+      (>= (travel_time ?rob) (/ (* (weight ?obj) (distance ?from ?to)) 100)))
     :effect (and
       (not (carryingCrate ?rob ?obj))
       (freeMover ?rob)
       (not (inTransit ?obj))
-      (at ?obj loadingBay)
-      (at-robby ?rob loadingBay)
+      (at ?obj ?to)
+      (at-robby ?rob ?to)
       (assign (travel_time ?rob) 0)
       (to_load ?obj)
       (not (freeLoader ?ld))
-    ))
+      (not (moving-loaded ?rob ?from ?to))
+        )
+    )
 
 
 
 
 
 
-  ;; Free mover movement
-  (:action startMove
-    :parameters (?rob - mover ?from - location ?to - location)
+  ;; Azione di movimento libero
+  (:action move
+    :parameters (?mover - mover ?from - location ?to - location)
     :precondition (and
-      (at-robby ?rob ?from)
-      (freeMover ?rob)
+      (at-robby ?mover ?from)
+      (freeMover ?mover)
       (not (= ?from ?to)))
     :effect (and
-      (moving ?rob ?from ?to)
-      (not (at-robby ?rob ?from))
-      (assign (travel_time ?rob) 0))
+      (not (at-robby ?mover ?from))
+      (movingFree ?mover ?from ?to)
+      (assign (travel_time ?mover) 0))
   )
 
-  (:process movingProcess
-    :parameters (?rob - mover ?from - location ?to - location)
-    :precondition (moving ?rob ?from ?to)
-    :effect (increase (travel_time ?rob) (* #t 1))
+  ;; Processo di movimento libero
+  (:process moving
+    :parameters (?mover - mover ?from - location ?to - location)
+    :precondition (movingFree ?mover ?from ?to)
+    :effect (increase (travel_time ?mover) (* #t 1))
   )
 
-  (:event endMove
-    :parameters (?rob - mover ?from - location ?to - location)
+  ;; Evento di arrivo a destinazione (mover libero)
+  (:event endMoving 
+    :parameters (?mover - mover ?from - location ?to - location)
     :precondition (and
-      (moving ?rob ?from ?to)
-      (>= (travel_time ?rob) (/ (distance ?from ?to) 10)))
+      (movingFree ?mover ?from ?to)
+      (>= (travel_time ?mover) (/ (distance ?from ?to) 10)))
     :effect (and
-      (not (moving ?rob ?from ?to))
-      (at-robby ?rob ?to)
-      (freeMover ?rob)
-      (assign (travel_time ?rob) 0))
+      (not (movingFree ?mover ?from ?to))
+      (freeMover ?mover)
+      (at-robby ?mover ?to)
+      (assign (travel_time ?mover) 0))
   )
-
   
-
 
 ;; Double crate pick-up and carrying
 
@@ -138,91 +142,106 @@
       (freeMover ?rob1)
       (freeMover ?rob2)
       (not (= ?rob1 ?rob2))
-      (not (pickedFrom ?obj ?loc))
+      (not (pickedFrom ?obj ?loc)) ; if the crate is fragile, it has to be picked up by two movers
     )
     :effect (and
-      (carryingCrate ?rob1 ?obj)
-      (carryingCrate ?rob2 ?obj)
+      (carryingCrateDouble ?rob1 ?rob2 ?obj)
       (not (freeMover ?rob1))
       (not (freeMover ?rob2))
       (linkedWith ?rob1 ?rob2)
-      (linkedWith ?rob2 ?rob1)
       (not (at ?obj ?loc))
       (pickedFrom ?obj ?loc)
+
     )
   )
 
   (:action startCarryDouble
-    :parameters (?rob1 - mover ?rob2 - mover ?obj - crate ?from - location)
+    :parameters (?rob1 - mover ?rob2 - mover ?obj - crate ?from - location ?to - location ?ld - loader)
     :precondition (and
-      (carryingCrate ?rob1 ?obj)
-      (carryingCrate ?rob2 ?obj)
+      (not (inTransit ?obj))
+      (not (= ?rob1 ?rob2))
+      (not (freeMover ?rob1))
+      (not (freeMover ?rob2))
+      (freeLoader ?ld)
+      (carryingCrateDouble ?rob1 ?rob2 ?obj)
       (pickedFrom ?obj ?from)
       (linkedWith ?rob1 ?rob2)
-      (not (inTransit ?obj)))
+    )
     :effect (and
-      (moving ?rob1 ?from loadingBay)
-      (moving ?rob2 ?from loadingBay)
       (not (at-robby ?rob1 ?from))
       (not (at-robby ?rob2 ?from))
       (assign (travel_time ?rob1) 0)
       (assign (travel_time ?rob2) 0)
-      (inTransit ?obj))
+      (inTransit ?obj)
+      (moving-loaded-double ?rob1 ?rob2 ?from ?to)
+      (not (freeMover ?rob1))
+      (not (freeMover ?rob2))
+      (not (movingFree ?rob1 ?from ?to))
+      (not (movingFree ?rob2 ?from ?to))
+    )
   )
 
   (:process carryingDouble
-    :parameters (?rob1 - mover ?rob2 - mover ?obj - crate ?from - location)
+    :parameters (?rob1 - mover ?rob2 - mover ?obj - crate ?from - location ?to - location)
     :precondition (and
-      (carryingCrate ?rob1 ?obj)
-      (carryingCrate ?rob2 ?obj)
+      (not (= ?rob1 ?rob2))
+      (not (freeMover ?rob1))
+      (not (freeMover ?rob2))
+      (carryingCrateDouble ?rob1 ?rob2 ?obj)
       (inTransit ?obj)
-      (moving ?rob1 ?from loadingBay)
-      (moving ?rob2 ?from loadingBay))
+      (moving-loaded-double ?rob1 ?rob2 ?from ?to)
+      (linkedWith ?rob1 ?rob2)
+      )
     :effect (and
       (increase (travel_time ?rob1) (* #t 1))
-      (increase (travel_time ?rob2) (* #t 1)))
+      (increase (travel_time ?rob2) (* #t 1))
+  )
   )
 
   (:event endCarryingDouble
-    :parameters (?rob1 - mover ?rob2 - mover ?obj - crate ?from - location ?ld - loader)
+    :parameters (?rob1 - mover ?rob2 - mover ?obj - crate ?from - location ?to - location ?ld - loader) 
     :precondition (and
-      (carryingCrate ?rob1 ?obj)
-      (carryingCrate ?rob2 ?obj)
+      (not (= ?rob1 ?rob2))
+      (linkedWith ?rob1 ?rob2)
+      (carryingCrateDouble ?rob1 ?rob2 ?obj)
+      (moving-loaded-double ?rob1 ?rob2 ?from ?to)
       (inTransit ?obj)
       (freeLoader ?ld)
-      (>= (travel_time ?rob1) (/ (* (weight ?obj) (distance ?from loadingBay)) (doubleCarry ?obj)))
-      (>= (travel_time ?rob2) (/ (* (weight ?obj) (distance ?from loadingBay)) (doubleCarry ?obj))))
+      (>= (travel_time ?rob1) (/ (* (weight ?obj) (distance ?from ?to)) (doubleCarry ?obj)))
+      (>= (travel_time ?rob2) (/ (* (weight ?obj) (distance ?from ?to)) (doubleCarry ?obj)))
+    )
     :effect (and
-      (not (carryingCrate ?rob1 ?obj))
-      (not (carryingCrate ?rob2 ?obj))
+      (not (carryingCrateDouble ?rob1 ?rob2 ?obj))
       (not (linkedWith ?rob1 ?rob2))
-      (not (linkedWith ?rob2 ?rob1))
       (freeMover ?rob1)
       (freeMover ?rob2)
-      (at ?obj loadingBay)
-      (at-robby ?rob1 loadingBay)
-      (at-robby ?rob2 loadingBay)
+      (at ?obj ?to)
+      (at-robby ?rob1 ?to)
+      (at-robby ?rob2 ?to)
       (assign (travel_time ?rob1) 0)
       (assign (travel_time ?rob2) 0)
       (not (inTransit ?obj))
       (to_load ?obj)
-      (not (freeLoader ?ld)))
+      (not (freeLoader ?ld))
+      (not (moving-loaded-double ?rob1 ?rob2 ?from ?to))
+      )
   )
+
+
 
 
   ;; Loader actions
   (:action startLoading
-    :parameters (?ld - loader ?obj - crate)
+    :parameters (?ld - loader ?obj - crate ?loc - location)
     :precondition (and
-      (at-loader ?ld loadingBay)
       (to_load ?obj)
-      (at ?obj loadingBay)
+      (at ?obj ?loc)
       (not (freeLoader ?ld)))
     :effect (and
       (loadingCrate ?ld ?obj)
       (not (freeLoader ?ld))
       (not (to_load ?obj))
-      (not (at ?obj loadingBay))
+      (not (at ?obj ?loc))
       (assign (loading_time ?ld) 0))
   )
 
@@ -241,7 +260,8 @@
       (not (loadingCrate ?ld ?obj))
       (freeLoader ?ld)
       (onBelt ?obj)
-      (assign (loading_time ?ld) 0)))
+      (assign (loading_time ?ld) 0)
+      ))
 )
 
-;;TO DO: CREATE ACTIO-PROCESS-EVENT FOR LIGHT CRATE DOUBLE PICK-UP AND DOUBLE CARRYING
+
