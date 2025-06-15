@@ -1,6 +1,6 @@
 (define (domain warehouse_domain)
   (:requirements :strips :typing :fluents :durative-actions :timed-initial-literals :conditional-effects :negative-preconditions :duration-inequalities :equality :disjunctive-preconditions :time)
-  (:types mover loader crate location)
+  (:types mover loader crate location group)
   
   (:constants
     loadingBay - location
@@ -21,6 +21,9 @@
     (onBelt ?obj - crate)
     (at-loader ?ld - loader ?loc - location)
     (fragile ?obj - crate)
+    (in-group ?obj - crate ?g - group)
+    (group-active ?g - group)
+    (group-next ?g1 - group ?g2 - group) ; indicates that g2 is the next group to be processed after g1
 )
 
   (:functions
@@ -29,11 +32,13 @@
     (travel_time ?rob - mover)
     (loading_time ?ld - loader)
     (doublecarry ?obj - crate)
+    (size ?g - group) ; size of the group, i.e., number of crates in the group
+    (arrived ?g - group) ; how many crates of one group have been dropped off at the loading bay
 )
 
   ;; crate pick-up
   (:action pickUp
-    :parameters (?rob - mover ?obj - crate ?loc - location)
+    :parameters (?rob - mover ?obj - crate ?loc - location ?g - group)
     :precondition (and
       (not (fragile ?obj)) ; if the crate is fragile, it has to be picked up by two movers
       (at ?obj ?loc)
@@ -41,6 +46,9 @@
       (freeMover ?rob)
       (< (weight ?obj) 50)
       (not (pickedFrom ?obj ?loc))
+      (in-group ?obj ?g)
+      (group-active ?g)
+      (< (arrived ?g) (size ?g)) ; the group is not done yet
     )
     :effect (and
       (carryingCrate ?rob ?obj)
@@ -52,13 +60,14 @@
 
   ;; Light crate carrying
   (:action startCarry
-    :parameters (?rob - mover ?obj - crate ?from - location)
+    :parameters (?rob - mover ?obj - crate ?from - location ?g - group)
     :precondition (and
       (< (weight ?obj) 50)
       (carryingCrate ?rob ?obj)
       (at-robby ?rob ?from)
       (pickedFrom ?obj ?from)
-      (not (inTransit ?obj)))
+      (not (inTransit ?obj))
+      (group-active ?g))
     :effect (and
       (not (at-robby ?rob ?from))
       (assign (travel_time ?rob) 0)
@@ -73,9 +82,10 @@
   )
 
   (:event endCarrying
-    :parameters (?rob - mover ?obj - crate ?from - location ?ld - loader)
+    :parameters (?rob - mover ?obj - crate ?from - location ?ld - loader ?g - group)
     :precondition (and
       (carryingCrate ?rob ?obj)
+      (group-active ?g)
       (inTransit ?obj)
       (freeLoader ?ld)
       (>= (travel_time ?rob) (/ (* (weight ?obj) (distance ?from loadingBay)) 100)))
@@ -88,7 +98,25 @@
       (assign (travel_time ?rob) 0)
       (to_load ?obj)
       (not (freeLoader ?ld))
-    ))
+        )
+    )
+  
+  (:action active-next-group
+    :parameters (?g1 - group ?g2 - group)
+    :precondition (and
+      (group-next ?g1 ?g2)
+      (group-active ?g1)
+      (not (group-active ?g2))
+      (>= (arrived ?g1) (size ?g1))
+    )
+    :effect (and
+      (group-active ?g2)
+      (not (group-active ?g1))
+    )
+  )
+
+
+
 
 
 
@@ -132,8 +160,10 @@
 ;; Double crate pick-up and carrying
 
   (:action pickUpDouble
-    :parameters (?rob1 - mover ?rob2 - mover ?obj - crate ?loc - location)
+    :parameters (?rob1 - mover ?rob2 - mover ?obj - crate ?loc - location ?g - group)
     :precondition (and
+      (in-group ?obj ?g)
+      (group-active ?g)
       (at ?obj ?loc)
       (at-robby ?rob1 ?loc)
       (at-robby ?rob2 ?loc)
@@ -150,6 +180,7 @@
       (linkedWith ?rob2 ?rob1)
       (not (at ?obj ?loc))
       (pickedFrom ?obj ?loc)
+
     )
   )
 
@@ -207,7 +238,8 @@
       (assign (travel_time ?rob2) 0)
       (not (inTransit ?obj))
       (to_load ?obj)
-      (not (freeLoader ?ld)))
+      (not (freeLoader ?ld))
+      )
   )
 
 
@@ -234,9 +266,11 @@
   )
 
   (:event endLoading
-    :parameters (?ld - loader ?obj - crate)
+    :parameters (?ld - loader ?obj - crate  ?g - group)
     :precondition (and
       (loadingCrate ?ld ?obj)
+      (in-group ?obj ?g)
+      (group-active ?g)
       (or
       (and (fragile ?obj) (>= (loading_time ?ld) 6))
       (and (not (fragile ?obj)) (>= (loading_time ?ld) 4))
@@ -245,7 +279,9 @@
       (not (loadingCrate ?ld ?obj))
       (freeLoader ?ld)
       (onBelt ?obj)
-      (assign (loading_time ?ld) 0)))
+      (assign (loading_time ?ld) 0)
+      (increase (arrived ?g) 1)
+      ))
 )
 
 
