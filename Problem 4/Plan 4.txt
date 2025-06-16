@@ -1,0 +1,155 @@
+Domain parsed
+Problem parsed
+Grounding..
+Grounding Time: 1645
+Aibr Preprocessing
+UFX:false
+|F|:440
+|X|:6
+Heuristic Problem Creation
+Aibr Preprocessing
+|A|:1416
+|P|:874
+|E|:606
+Delta time heuristic model:1.0
+Delta time planning model:1.0
+Delta time search-execution model:1.0
+Delta time validation model:1
+Numeric Error for Complex Condition Activated
+H1 Setup Time (msec): 86
+h(I):9052.666
+ g(n)= 1.0 h(n)=7854.6665
+ g(n)= 2.0 h(n)=6220.6665
+ g(n)= 3.0 h(n)=3680.6665
+ g(n)= 6.0 h(n)=3596.6665
+ g(n)= 12.0 h(n)=3531.6665
+ g(n)= 13.0 h(n)=3045.6665
+ g(n)= 14.0 h(n)=2564.3333
+ g(n)= 15.0 h(n)=2086.3333
+ g(n)= 16.0 h(n)=1615.3334
+ g(n)= 17.0 h(n)=901.3333
+ g(n)= 25.0 h(n)=809.99994
+-------------Time: 10s ; Expanded Nodes: 193 (Avg-Speed 19.0 n/s); Evaluated States: 788
+-------------Time: 20s ; Expanded Nodes: 601 (Avg-Speed 30.0 n/s); Evaluated States: 1700
+-------------Time: 30s ; Expanded Nodes: 1118 (Avg-Speed 37.0 n/s); Evaluated States: 2571
+-------------Time: 40s ; Expanded Nodes: 1680 (Avg-Speed 42.0 n/s); Evaluated States: 3466
+-------------Time: 50s ; Expanded Nodes: 2213 (Avg-Speed 44.0 n/s); Evaluated States: 4444
+-------------Time: 60s ; Expanded Nodes: 2948 (Avg-Speed 49.0 n/s); Evaluated States: 5397
+-------------Time: 70s ; Expanded Nodes: 3812 (Avg-Speed 54.0 n/s); Evaluated States: 6348
+-------------Time: 80s ; Expanded Nodes: 4779 (Avg-Speed 59.0 n/s); Evaluated States: 7321
+-------------Time: 90s ; Expanded Nodes: 5646 (Avg-Speed 62.0 n/s); Evaluated States: 8289
+-------------Time: 100s ; Expanded Nodes: 6966 (Avg-Speed 69.0 n/s); Evaluated States: 9275
+-------------Time: 110s ; Expanded Nodes: 8042 (Avg-Speed 73.0 n/s); Evaluated States: 10255
+ g(n)= 39.0 h(n)=699.3334
+ g(n)= 43.0 h(n)=627.3334
+ g(n)= 44.0 h(n)=420.3333
+ g(n)= 45.0 h(n)=263.3333
+ g(n)= 54.0 h(n)=258.33334
+ g(n)= 55.0 h(n)=248.66666
+ g(n)= 55.0 h(n)=197.66666
+-------------Time: 120s ; Expanded Nodes: 8491 (Avg-Speed 70.0 n/s); Evaluated States: 11690
+-------------Time: 130s ; Expanded Nodes: 9187 (Avg-Speed 70.0 n/s); Evaluated States: 13101
+-------------Time: 140s ; Expanded Nodes: 10186 (Avg-Speed 72.0 n/s); Evaluated States: 14421
+-------------Time: 150s ; Expanded Nodes: 11364 (Avg-Speed 75.0 n/s); Evaluated States: 15867
+-------------Time: 160s ; Expanded Nodes: 12648 (Avg-Speed 79.0 n/s); Evaluated States: 17155
+-------------Time: 170s ; Expanded Nodes: 14181 (Avg-Speed 83.0 n/s); Evaluated States: 18415
+-------------Time: 180s ; Expanded Nodes: 15747 (Avg-Speed 87.0 n/s); Evaluated States: 19628
+ g(n)= 59.0 h(n)=188.66666
+ g(n)= 68.0 h(n)=175.0
+ g(n)= 69.0 h(n)=161.0
+ g(n)= 70.0 h(n)=149.0
+ g(n)= 70.0 h(n)=122.0
+-------------Time: 190s ; Expanded Nodes: 16893 (Avg-Speed 88.0 n/s); Evaluated States: 21488
+-------------Time: 200s ; Expanded Nodes: 18021 (Avg-Speed 90.0 n/s); Evaluated States: 23653
+-------------Time: 210s ; Expanded Nodes: 19545 (Avg-Speed 93.0 n/s); Evaluated States: 25794
+-------------Time: 220s ; Expanded Nodes: 21302 (Avg-Speed 96.0 n/s); Evaluated States: 27867
+-------------Time: 230s ; Expanded Nodes: 23079 (Avg-Speed 100.0 n/s); Evaluated States: 29612
+-------------Time: 240s ; Expanded Nodes: 25146 (Avg-Speed 104.0 n/s); Evaluated States: 31234
+ g(n)= 76.0 h(n)=103.666664
+ g(n)= 78.0 h(n)=102.0
+ g(n)= 79.0 h(n)=91.0
+ g(n)= 80.0 h(n)=80.0
+ g(n)= 81.0 h(n)=69.0
+ g(n)= 82.0 h(n)=59.0
+ g(n)= 83.0 h(n)=52.0
+ g(n)= 83.0 h(n)=38.0
+ g(n)= 87.0 h(n)=36.0
+ g(n)= 88.0 h(n)=24.0
+ g(n)= 89.0 h(n)=18.0
+ g(n)= 90.0 h(n)=6.0
+ g(n)= 91.0 h(n)=5.0
+ g(n)= 92.0 h(n)=4.0
+ g(n)= 93.0 h(n)=3.0
+ g(n)= 94.0 h(n)=2.0
+Extracting plan with execution delta: 1.0
+Problem Solved
+
+Found Plan:
+0: (move mover1 loadingBay initialPosition1)
+0: -----waiting---- [2.0]
+2.0: (move mover2 loadingBay initialPosition1)
+2.0: -----waiting---- [4.0]
+4.0: (move mover1 initialPosition1 loadingBay)
+4.0: -----waiting---- [6.0]
+6.0: (pickUp mover2 crate1 initialPosition1 A)
+6.0: (startCarry mover2 crate1 initialPosition1 loadingBay A loader1)
+6.0: -----waiting---- [12.0]
+12.0: (move mover1 loadingBay initialPosition2)
+12.0: (startLoading loader1 crate1 loadingBay)
+12.0: -----waiting---- [13.0]
+13.0: (move mover2 loadingBay initialPosition2)
+13.0: -----waiting---- [15.0]
+15.0: (pickUpDouble mover1 mover2 crate2 initialPosition2 A)
+15.0: -----waiting---- [16.0]
+16.0: (startCarryDouble mover1 mover2 crate2 initialPosition2 loadingBay A loader1)
+16.0: -----waiting---- [19.0]
+19.0: (move mover2 loadingBay initialPosition3)
+19.0: -----waiting---- [20.0]
+20.0: (move mover1 loadingBay initialPosition3)
+20.0: -----waiting---- [21.0]
+21.0: (startLoading loader1 crate2 loadingBay)
+21.0: -----waiting---- [27.0]
+27.0: (active-next-group A B)
+27.0: (pickUpDouble mover2 mover1 crate3 initialPosition3 B)
+27.0: (startCarryDouble mover2 mover1 crate3 initialPosition3 loadingBay B loader1)
+27.0: -----waiting---- [29.0]
+29.0: (startLoading loader1 crate3 loadingBay)
+29.0: -----waiting---- [32.0]
+32.0: (move mover2 loadingBay initialPosition4)
+32.0: -----waiting---- [33.0]
+33.0: (move mover1 loadingBay initialPosition4)
+33.0: -----waiting---- [35.0]
+35.0: (pickUpDouble mover2 mover1 crate4 initialPosition4 B)
+35.0: (startCarryDouble mover2 mover1 crate4 initialPosition4 loadingBay B loader1)
+35.0: -----waiting---- [38.0]
+38.0: (move mover1 loadingBay initialPosition5)
+38.0: (startLoading loader1 crate4 loadingBay)
+38.0: -----waiting---- [40.0]
+40.0: (move mover2 loadingBay initialPosition5)
+40.0: -----waiting---- [43.0]
+43.0: (pickUpDouble mover1 mover2 crate5 initialPosition5 B)
+43.0: -----waiting---- [44.0]
+44.0: (startCarryDouble mover1 mover2 crate5 initialPosition5 loadingBay B loader1)
+44.0: -----waiting---- [50.0]
+50.0: (startLoading loader1 crate5 loadingBay)
+50.0: -----waiting---- [55.0]
+55.0: (move mover1 loadingBay initialPosition6)
+55.0: (move mover2 loadingBay initialPosition6)
+55.0: -----waiting---- [56.0]
+56.0: (active-next-group B nogroup)
+56.0: (pickUp mover1 crate6 initialPosition6 nogroup)
+56.0: (startCarry mover1 crate6 initialPosition6 loadingBay nogroup loader1)
+56.0: -----waiting---- [58.0]
+58.0: (startLoading loader1 crate6 loadingBay)
+58.0: -----waiting---- [62.0]
+
+Plan-Length:120
+Elapsed Time: 62.0
+Metric (Search):95.0
+Planning Time (msec): 244160
+Heuristic Time (msec): 240413
+Search Time (msec): 244146
+Expanded Nodes:25996
+States Evaluated:32294
+Number of Dead-Ends detected:62467
+Number of Duplicates detected:22601

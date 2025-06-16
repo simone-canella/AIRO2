@@ -1,0 +1,107 @@
+Domain parsed
+Problem parsed
+Grounding..
+Grounding Time: 389
+Aibr Preprocessing
+UFX:false
+|F|:233
+|X|:5
+Heuristic Problem Creation
+Aibr Preprocessing
+|A|:411
+|P|:294
+|E|:180
+Delta time heuristic model:1.0
+Delta time planning model:1.0
+Delta time search-execution model:1.0
+Delta time validation model:1
+Numeric Error for Complex Condition Activated
+H1 Setup Time (msec): 46
+h(I):4460.0
+ g(n)= 1.0 h(n)=4137.0
+ g(n)= 2.0 h(n)=3712.0
+ g(n)= 3.0 h(n)=3000.0
+ g(n)= 4.0 h(n)=2689.0
+ g(n)= 5.0 h(n)=2264.0
+ g(n)= 6.0 h(n)=1552.0
+ g(n)= 15.0 h(n)=1519.0
+ g(n)= 16.0 h(n)=1331.0
+ g(n)= 17.0 h(n)=1143.0
+ g(n)= 18.0 h(n)=955.0
+ g(n)= 19.0 h(n)=767.0
+ g(n)= 20.0 h(n)=579.0
+ g(n)= 21.0 h(n)=393.0
+ g(n)= 22.0 h(n)=259.0
+ g(n)= 30.0 h(n)=246.0
+-------------Time: 10s ; Expanded Nodes: 771 (Avg-Speed 77.0 n/s); Evaluated States: 1614
+-------------Time: 20s ; Expanded Nodes: 2427 (Avg-Speed 121.0 n/s); Evaluated States: 3310
+ g(n)= 47.0 h(n)=196.0
+ g(n)= 56.0 h(n)=191.0
+ g(n)= 57.0 h(n)=168.0
+ g(n)= 58.0 h(n)=149.0
+-------------Time: 30s ; Expanded Nodes: 4300 (Avg-Speed 143.0 n/s); Evaluated States: 5780
+-------------Time: 40s ; Expanded Nodes: 6651 (Avg-Speed 166.0 n/s); Evaluated States: 8818
+ g(n)= 76.0 h(n)=89.0
+ g(n)= 78.0 h(n)=83.0
+ g(n)= 79.0 h(n)=72.0
+ g(n)= 80.0 h(n)=61.0
+ g(n)= 81.0 h(n)=54.0
+ g(n)= 81.0 h(n)=40.0
+ g(n)= 85.0 h(n)=30.0
+ g(n)= 86.0 h(n)=24.0
+ g(n)= 87.0 h(n)=18.0
+ g(n)= 88.0 h(n)=6.0
+ g(n)= 89.0 h(n)=5.0
+ g(n)= 90.0 h(n)=4.0
+ g(n)= 91.0 h(n)=3.0
+ g(n)= 92.0 h(n)=2.0
+Extracting plan with execution delta: 1.0
+Problem Solved
+
+Found Plan:
+0: (move mover2 loadingBay initialPosition1)
+0: -----waiting---- [2.0]
+2.0: (move mover1 loadingBay initialPosition1)
+2.0: -----waiting---- [4.0]
+4.0: (pickUpDouble mover1 mover2 crate1 initialPosition1 A)
+4.0: (startCarryDouble mover1 mover2 crate1 initialPosition1 loadingBay A loader1)
+4.0: -----waiting---- [18.0]
+18.0: (startLoading loader1 crate1 loadingBay)
+18.0: -----waiting---- [19.0]
+19.0: (move mover2 loadingBay initialPosition2)
+19.0: -----waiting---- [20.0]
+20.0: (move mover1 loadingBay initialPosition2)
+20.0: -----waiting---- [22.0]
+22.0: (pickUpDouble mover1 mover2 crate2 initialPosition2 A)
+22.0: (startCarryDouble mover1 mover2 crate2 initialPosition2 loadingBay A loader1)
+22.0: -----waiting---- [38.0]
+38.0: (move mover2 loadingBay initialPosition3)
+38.0: (startLoading loader1 crate2 loadingBay)
+38.0: -----waiting---- [40.0]
+40.0: (move mover1 loadingBay initialPosition3)
+40.0: -----waiting---- [43.0]
+43.0: (pickUpDouble mover2 mover1 crate3 initialPosition3 A)
+43.0: -----waiting---- [44.0]
+44.0: (startCarryDouble mover2 mover1 crate3 initialPosition3 loadingBay A loader1)
+44.0: -----waiting---- [62.0]
+62.0: (startLoading loader1 crate3 loadingBay)
+62.0: -----waiting---- [65.0]
+65.0: (move mover2 loadingBay initialPosition4)
+65.0: -----waiting---- [66.0]
+66.0: (active-next-group A nogroup)
+66.0: (pickUp mover2 crate4 initialPosition4 nogroup)
+66.0: (startCarry mover2 crate4 initialPosition4 loadingBay nogroup loader1)
+66.0: -----waiting---- [69.0]
+69.0: (startLoading loader1 crate4 loadingBay)
+69.0: -----waiting---- [73.0]
+
+Plan-Length:108
+Elapsed Time: 73.0
+Metric (Search):93.0
+Planning Time (msec): 47649
+Heuristic Time (msec): 46958
+Search Time (msec): 47639
+Expanded Nodes:8962
+States Evaluated:11060
+Number of Dead-Ends detected:12629
+Number of Duplicates detected:7153
