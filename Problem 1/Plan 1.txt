@@ -1,0 +1,88 @@
+Domain parsed
+Problem parsed
+Grounding..
+Grounding Time: 131
+Aibr Preprocessing
+UFX:false
+|F|:155
+|X|:5
+Heuristic Problem Creation
+Aibr Preprocessing
+|A|:229
+|P|:155
+|E|:111
+Delta time heuristic model:1.0
+Delta time planning model:1.0
+Delta time search-execution model:1.0
+Delta time validation model:1
+Numeric Error for Complex Condition Activated
+H1 Setup Time (msec): 40
+h(I):1469.3333
+ g(n)= 1.0 h(n)=1287.3333
+ g(n)= 2.0 h(n)=1013.3333
+ g(n)= 3.0 h(n)=595.3333
+ g(n)= 6.0 h(n)=573.3333
+ g(n)= 12.0 h(n)=510.3333
+ g(n)= 13.0 h(n)=412.3333
+ g(n)= 14.0 h(n)=317.66666
+ g(n)= 15.0 h(n)=184.66667
+ g(n)= 23.0 h(n)=147.33334
+ g(n)= 27.0 h(n)=130.0
+ g(n)= 35.0 h(n)=123.0
+ g(n)= 36.0 h(n)=103.0
+ g(n)= 37.0 h(n)=84.0
+ g(n)= 43.0 h(n)=72.0
+ g(n)= 44.0 h(n)=60.0
+ g(n)= 45.0 h(n)=48.0
+ g(n)= 46.0 h(n)=36.0
+ g(n)= 47.0 h(n)=24.0
+ g(n)= 48.0 h(n)=6.0
+ g(n)= 49.0 h(n)=5.0
+ g(n)= 50.0 h(n)=4.0
+ g(n)= 51.0 h(n)=3.0
+ g(n)= 52.0 h(n)=2.0
+Extracting plan with execution delta: 1.0
+Problem Solved
+
+Found Plan:
+0: (move mover1 loadingBay initialPosition2)
+0: -----waiting---- [2.0]
+2.0: (move mover2 loadingBay initialPosition2)
+2.0: -----waiting---- [4.0]
+4.0: (move mover1 initialPosition2 loadingBay)
+4.0: -----waiting---- [6.0]
+6.0: (pickUp mover2 crate2 initialPosition2 A)
+6.0: (startCarry mover2 crate2 initialPosition2 loadingBay A loader1)
+6.0: -----waiting---- [10.0]
+10.0: (startLoading loader1 crate2 loadingBay)
+10.0: -----waiting---- [11.0]
+11.0: (move mover2 loadingBay initialPosition3)
+11.0: (move mover1 loadingBay initialPosition3)
+11.0: -----waiting---- [13.0]
+13.0: (pickUpDouble mover2 mover1 crate3 initialPosition3 A)
+13.0: -----waiting---- [14.0]
+14.0: (startCarryDouble mover2 mover1 crate3 initialPosition3 loadingBay A loader1)
+14.0: -----waiting---- [17.0]
+17.0: (move mover1 loadingBay initialPosition1)
+17.0: -----waiting---- [18.0]
+18.0: (move mover2 loadingBay initialPosition1)
+18.0: -----waiting---- [19.0]
+19.0: (startLoading loader1 crate3 loadingBay)
+19.0: -----waiting---- [25.0]
+25.0: (active-next-group A nogroup)
+25.0: (pickUpDouble mover1 mover2 crate1 initialPosition1 nogroup)
+25.0: (startCarryDouble mover1 mover2 crate1 initialPosition1 loadingBay nogroup loader1)
+25.0: -----waiting---- [32.0]
+32.0: (startLoading loader1 crate1 loadingBay)
+32.0: -----waiting---- [36.0]
+
+Plan-Length:66
+Elapsed Time: 36.0
+Metric (Search):53.0
+Planning Time (msec): 2291
+Heuristic Time (msec): 2172
+Search Time (msec): 2284
+Expanded Nodes:1730
+States Evaluated:2331
+Number of Dead-Ends detected:1969
+Number of Duplicates detected:1524

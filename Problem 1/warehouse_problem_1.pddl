@@ -1,10 +1,10 @@
-(define (problem warehouse_problem)
-    (:domain warehouse_domain)
+(define (problem warehouse_problem_1)
+    (:domain warehouse_domain_1)
     (:objects
         mover1 mover2 - mover
         loader1 - loader
         crate1 crate2 crate3 - crate
-        initialPosition1 initialPosition2 initialPosition3 - location
+        initialPosition1 initialPosition2 initialPosition3 loadingBay - location
         A nogroup - group
     )
 
@@ -29,19 +29,19 @@
         (at crate1 initialPosition1)
         (in-group crate1 nogroup) ; crate1 is not in any group
         (= (weight crate1) 70)
-        (= (doublecarry crate1) 150) ;it's a heavy crate, so it requires double carry
+        (= (doublecarry crate1) 100) ;it's a heavy crate, so it requires double carry
 
         ;Crate2 initial configuration
         (at crate2 initialPosition2)
         (in-group crate2 A)
         (= (weight crate2) 20)
-        (= (doublecarry crate2) 100) ;it's a light crate, so double carry is faster (smaller weight)
+        (= (doublecarry crate2) 150) ;it's a light crate, so double carry is faster (smaller weight)
 
         ;Crate3 initial configuration
         (at crate3 initialPosition3)
         (in-group crate3 A)
         (= (weight crate3) 20)
-        (= (doublecarry crate3) 100) ;it's a light crate, so double carry is faster (smaller weight)
+        (= (doublecarry crate3) 150) ;it's a light crate, so double carry is faster (smaller weight)
         (fragile crate3) ; crate3 is fragile
 
         ;Group A initial configuration
