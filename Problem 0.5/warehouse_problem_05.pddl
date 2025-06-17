@@ -9,9 +9,9 @@
 
     (:init
         ;Initialize distance between object
-        (= (loading_time loader1) 0)
-        (= (travel_time mover1) 0)
-        (= (travel_time mover2) 0)
+        (= (loadingTime loader1) 0)
+        (= (travelTime mover1) 0)
+        (= (travelTime mover2) 0)
 
         (= (distance initialPosition1 loadingBay) 10)
         (= (distance initialPosition2 loadingBay) 20)
@@ -36,16 +36,12 @@
 
         ;Mover1 initial configuration
         (at-robby mover1 loadingBay)
-        ;(= (distance mover1) 0)
-        (freeMover mover1)
+        (freeMover mover1) ;; mover1 is free to carry
 
         ;Mover2 initial configuration
         (at-robby mover2 loadingBay)
-        ;(= (distance mover2) 0)
-        (freeMover mover2)
+        (freeMover mover2) ;; mover2 is free to carry
 
-        ;Initialize constant value
-        ;(= (time) 0)
     )
 
     (:goal (and
@@ -56,6 +52,4 @@
     )
 
     (:metric minimize (total-time))
-    ;un-comment the following line if metric is needed
-    ;(:metric minimize (???))
 )
